@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Create Campaign - Twitter Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-plus me-2"></i>Create Campaign
+            </h1>
+            <p class="lead text-muted">Set up a new AI-powered Twitter campaign</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('campaigns') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Campaigns
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cog me-2"></i>Campaign Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Basic Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-uppercase text-muted mb-3">Basic Information</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Campaign Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" required 
+                                           placeholder="e.g., Summer Product Launch">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="tweet_frequency" class="form-label">Tweets per Day *</label>
+                                    <select class="form-select" id="tweet_frequency" name="tweet_frequency" required>
+                                        <option value="1">1 tweet per day</option>
+                                        <option value="2">2 tweets per day</option>
+                                        <option value="3" selected>3 tweets per day</option>
+                                        <option value="4">4 tweets per day</option>
+                                        <option value="5">5 tweets per day</option>
+                                        <option value="6">6 tweets per day</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3" 
+                                              placeholder="Brief description of your campaign goals and strategy..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Strategy -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-uppercase text-muted mb-3">Content Strategy</h6>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="keywords" class="form-label">Keywords</label>
+                                    <textarea class="form-control" id="keywords" name="keywords" rows="3" 
+                                              placeholder="marketing, social media, growth, engagement"></textarea>
+                                    <div class="form-text">
+                                        Comma-separated keywords that represent your campaign focus
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="hashtags" class="form-label">Hashtags</label>
+                                    <textarea class="form-control" id="hashtags" name="hashtags" rows="3" 
+                                              placeholder="#marketing #socialmedia #growth #business"></textarea>
+                                    <div class="form-text">
+                                        Space or comma-separated hashtags to include in tweets
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Target Audience -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-uppercase text-muted mb-3">Target Audience</h6>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="target_audience" class="form-label">Audience Description</label>
+                                    <textarea class="form-control" id="target_audience" name="target_audience" rows="3" 
+                                              placeholder="Small business owners, marketing professionals, entrepreneurs aged 25-45 interested in digital marketing tools..."></textarea>
+                                    <div class="form-text">
+                                        Describe your target audience to help AI generate more relevant content
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ethical Guidelines Notice -->
+                        <div class="alert alert-info mb-4">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-shield-alt me-2"></i>Ethical Guidelines
+                            </h6>
+                            <p class="mb-2">Our AI content generation follows ethical social media practices:</p>
+                            <ul class="mb-0">
+                                <li>Content is checked for spam patterns before posting</li>
+                                <li>Tweets respect platform guidelines and community standards</li>
+                                <li>Generated content aims to provide value to your audience</li>
+                                <li>No misleading or deceptive content will be created</li>
+                            </ul>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>Create Campaign
+                            </button>
+                            <a href="{{ url_for('campaigns') }}" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Tips Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Campaign Tips
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-primary">Effective Keywords</h6>
+                        <small class="text-muted">
+                            Use specific, relevant keywords that describe your industry, products, or services. 
+                            Mix broad and niche terms for better reach.
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-success">Hashtag Strategy</h6>
+                        <small class="text-muted">
+                            Combine popular hashtags with niche ones. Use 2-5 hashtags per tweet for optimal engagement.
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-info">Posting Frequency</h6>
+                        <small class="text-muted">
+                            Start with 2-3 tweets per day. Monitor engagement and adjust frequency based on performance.
+                        </small>
+                    </div>
+                    <div class="mb-0">
+                        <h6 class="text-warning">Audience Focus</h6>
+                        <small class="text-muted">
+                            Be specific about your target audience. Include demographics, interests, and pain points.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-robot me-2"></i>AI Campaign Suggestions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="industry" class="form-label">Your Industry</label>
+                        <select class="form-select" id="industry">
+                            <option value="">Select industry...</option>
+                            <option value="technology">Technology</option>
+                            <option value="marketing">Marketing & Advertising</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="education">Education</option>
+                            <option value="real-estate">Real Estate</option>
+                            <option value="food">Food & Beverage</option>
+                            <option value="fashion">Fashion & Beauty</option>
+                            <option value="fitness">Fitness & Wellness</option>
+                            <option value="travel">Travel & Tourism</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="goals" class="form-label">Campaign Goals</label>
+                        <textarea class="form-control" id="goals" rows="2" 
+                                  placeholder="e.g., increase brand awareness, drive website traffic, generate leads"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-outline-primary w-100" onclick="getSuggestions()">
+                        <i class="fas fa-magic me-2"></i>Get AI Suggestions
+                    </button>
+                    
+                    <div id="suggestions" class="mt-3" style="display: none;">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Getting suggestions...</span>
+                        </div>
+                        <span class="ms-2">AI is generating suggestions...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Suggestions Modal -->
+<div class="modal fade" id="suggestionsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>AI Campaign Suggestions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="suggestionsContent">
+                    <!-- Suggestions will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function getSuggestions() {
+    const industry = document.getElementById('industry').value;
+    const goals = document.getElementById('goals').value;
+    
+    if (!industry && !goals) {
+        alert('Please select an industry or enter your campaign goals to get suggestions.');
+        return;
+    }
+    
+    // Show loading state
+    document.getElementById('suggestions').style.display = 'block';
+    
+    // Simulate AI suggestions (in real implementation, this would call the AI service)
+    setTimeout(() => {
+        document.getElementById('suggestions').style.display = 'none';
+        
+        // Show suggestions modal with sample data
+        const suggestions = [
+            {
+                name: "Brand Awareness Boost",
+                description: "Focus on building brand recognition through consistent messaging and engaging content.",
+                keywords: ["brand", "awareness", "recognition", "visibility", "marketing"],
+                hashtags: ["#branding", "#marketing", "#businessgrowth"],
+                target_audience: "Business owners and marketing professionals aged 25-45",
+                tweet_frequency: 3
+            }
+        ];
+        
+        displaySuggestions(suggestions);
+    }, 2000);
+}
+
+function displaySuggestions(suggestions) {
+    const content = document.getElementById('suggestionsContent');
+    content.innerHTML = '';
+    
+    suggestions.forEach((suggestion, index) => {
+        const suggestionCard = `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">${suggestion.name}</h6>
+                    <p class="card-text">${suggestion.description}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Keywords:</small>
+                            <p class="small">${suggestion.keywords.join(', ')}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Hashtags:</small>
+                            <p class="small">${suggestion.hashtags.join(' ')}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <small class="text-muted">Target Audience:</small>
+                            <p class="small">${suggestion.target_audience}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Frequency:</small>
+                            <p class="small">${suggestion.tweet_frequency} tweets/day</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="applySuggestion(${index})">
+                        <i class="fas fa-check me-1"></i>Use This Suggestion
+                    </button>
+                </div>
+            </div>
+        `;
+        content.innerHTML += suggestionCard;
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('suggestionsModal'));
+    modal.show();
+}
+
+function applySuggestion(index) {
+    // This would apply the suggestion to the form
+    alert('Suggestion applied to form (feature to be implemented)');
+    bootstrap.Modal.getInstance(document.getElementById('suggestionsModal')).hide();
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        
+        if (!name) {
+            e.preventDefault();
+            alert('Please enter a campaign name.');
+            document.getElementById('name').focus();
+            return false;
+        }
+        
+        if (name.length < 3) {
+            e.preventDefault();
+            alert('Campaign name must be at least 3 characters long.');
+            document.getElementById('name').focus();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

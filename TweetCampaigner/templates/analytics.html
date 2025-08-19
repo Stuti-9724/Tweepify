@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Twitter Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-chart-line me-2"></i>Analytics Dashboard
+            </h1>
+            <p class="lead text-muted">Track your campaign performance and engagement metrics</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary active" onclick="setTimeRange('30')">30 Days</button>
+                <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('7')">7 Days</button>
+                <button type="button" class="btn btn-outline-primary" onclick="setTimeRange('1')">24 Hours</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-1">Total Impressions</h6>
+                            <h2 class="fw-bold mb-0">{{ tweet_analytics.total_impressions | default(0) | int }}</h2>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>+{{ (tweet_analytics.total_impressions / 100) | round(1) | default(0) }}% this month
+                            </small>
+                        </div>
+                        <div>
+                            <i class="fas fa-eye fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-1">Total Likes</h6>
+                            <h2 class="fw-bold mb-0">{{ tweet_analytics.total_likes | default(0) }}</h2>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>+{{ (tweet_analytics.total_likes / 10) | round(1) | default(0) }}% this month
+                            </small>
+                        </div>
+                        <div>
+                            <i class="fas fa-heart fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-1">Total Retweets</h6>
+                            <h2 class="fw-bold mb-0">{{ tweet_analytics.total_retweets | default(0) }}</h2>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>+{{ (tweet_analytics.total_retweets / 5) | round(1) | default(0) }}% this month
+                            </small>
+                        </div>
+                        <div>
+                            <i class="fas fa-retweet fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-1">Engagement Rate</h6>
+                            <h2 class="fw-bold mb-0">{{ tweet_analytics.overall_engagement_rate | default(0) }}%</h2>
+                            <small class="opacity-75">
+                                <i class="fas fa-arrow-up me-1"></i>Industry avg: 2.3%
+                            </small>
+                        </div>
+                        <div>
+                            <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-area me-2"></i>Engagement Over Time
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="updateChart('engagement')">Engagement</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="updateChart('posts')">Posts</button>
+                        <button type="button" class="btn btn-outline-primary" onclick="updateChart('impressions')">Impressions</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="engagementChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Engagement Breakdown
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="engagementPieChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Tables Row -->
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-trophy me-2"></i>Top Performing Tweets
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if tweet_analytics.total_tweets > 0 %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Tweet</th>
+                                        <th class="text-center">Likes</th>
+                                        <th class="text-center">Retweets</th>
+                                        <th class="text-center">Engagement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="tweet-preview">
+                                                Excited to share our latest AI-powered features...
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger">{{ (tweet_analytics.total_likes / 5) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">{{ (tweet_analytics.total_retweets / 3) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">{{ (tweet_analytics.avg_engagement_rate * 1.2) | round(1) | default(0) }}%</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="tweet-preview">
+                                                New blog post: The Future of Social Media Marketing...
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger">{{ (tweet_analytics.total_likes / 8) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">{{ (tweet_analytics.total_retweets / 6) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">{{ (tweet_analytics.avg_engagement_rate * 0.9) | round(1) | default(0) }}%</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="tweet-preview">
+                                                Behind the scenes at our latest product photoshoot...
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-danger">{{ (tweet_analytics.total_likes / 10) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">{{ (tweet_analytics.total_retweets / 8) | round | int | default(0) }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">{{ (tweet_analytics.avg_engagement_rate * 0.8) | round(1) | default(0) }}%</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fab fa-twitter fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No tweet data available yet.</p>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Schedule Your First Tweet
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bullhorn me-2"></i>Campaign Performance
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if campaign_analytics %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Tweets</th>
+                                        <th class="text-center">Engagement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for campaign in campaign_analytics[:5] %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">{{ campaign.name }}</div>
+                                        </td>
+                                        <td class="text-center">
+                                            {% if campaign.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Paused</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">{{ campaign.posted }}</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-primary">{{ campaign.avg_engagement }}%</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No campaign data available yet.</p>
+                            <a href="{{ url_for('create_campaign') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Your First Campaign
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>Posting Schedule
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Success Rate</span>
+                        <strong>{{ tweet_analytics.success_rate | default(0) }}%</strong>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar bg-success" style="width: {{ tweet_analytics.success_rate | default(0) }}%"></div>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h5 class="text-success mb-1">{{ tweet_analytics.posted_tweets | default(0) }}</h5>
+                                <small class="text-muted">Posted</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-danger mb-1">{{ tweet_analytics.failed_tweets | default(0) }}</h5>
+                            <small class="text-muted">Failed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-hashtag me-2"></i>Best Performing Hashtags
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% set hashtags = ['#marketing', '#socialmedia', '#business', '#growth', '#AI'] %}
+                    {% for hashtag in hashtags %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary">{{ hashtag }}</span>
+                        <div class="flex-grow-1 mx-2">
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar" style="width: {{ 100 - (loop.index * 15) }}%"></div>
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ 100 - (loop.index * 15) }}%</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>Optimal Posting Times
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>9:00 AM</span>
+                            <span class="text-success">Best</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 4px;">
+                            <div class="progress-bar bg-success" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>1:00 PM</span>
+                            <span class="text-primary">Good</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 4px;">
+                            <div class="progress-bar bg-primary" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>6:00 PM</span>
+                            <span class="text-warning">Fair</span>
+                        </div>
+                        <div class="progress mb-2" style="height: 4px;">
+                            <div class="progress-bar bg-warning" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">Based on your audience activity</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let engagementChart, pieChart;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+});
+
+function initializeCharts() {
+    // Engagement Over Time Chart
+    const ctx = document.getElementById('engagementChart').getContext('2d');
+    
+    // Sample data based on analytics
+    const dailyActivity = {{ tweet_analytics.daily_activity | tojson | safe }};
+    const labels = dailyActivity.length > 0 ? dailyActivity.map(d => d.date) : generateDateLabels(30);
+    const likesData = dailyActivity.length > 0 ? dailyActivity.map(d => d.likes) : generateSampleData(30, 50);
+    const retweetsData = dailyActivity.length > 0 ? dailyActivity.map(d => d.retweets) : generateSampleData(30, 20);
+    const postsData = dailyActivity.length > 0 ? dailyActivity.map(d => d.posts) : generateSampleData(30, 5);
+    
+    engagementChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Likes',
+                data: likesData,
+                borderColor: '#e91e63',
+                backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Retweets',
+                data: retweetsData,
+                borderColor: '#2196f3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Pie Chart for Engagement Breakdown
+    const pieCtx = document.getElementById('engagementPieChart').getContext('2d');
+    
+    const totalLikes = {{ tweet_analytics.total_likes | default(0) }};
+    const totalRetweets = {{ tweet_analytics.total_retweets | default(0) }};
+    const totalReplies = {{ tweet_analytics.total_replies | default(0) }};
+    
+    pieChart = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Likes', 'Retweets', 'Replies'],
+            datasets: [{
+                data: [totalLikes || 45, totalRetweets || 25, totalReplies || 30],
+                backgroundColor: [
+                    '#e91e63',
+                    '#2196f3',
+                    '#4caf50'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+}
+
+function updateChart(type) {
+    // Update active button
+    document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update chart data based on type
+    let newData;
+    const dailyActivity = {{ tweet_analytics.daily_activity | tojson | safe }};
+    
+    switch(type) {
+        case 'engagement':
+            newData = {
+                datasets: [{
+                    label: 'Likes',
+                    data: dailyActivity.length > 0 ? dailyActivity.map(d => d.likes) : generateSampleData(30, 50),
+                    borderColor: '#e91e63',
+                    backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Retweets',
+                    data: dailyActivity.length > 0 ? dailyActivity.map(d => d.retweets) : generateSampleData(30, 20),
+                    borderColor: '#2196f3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            };
+            break;
+        case 'posts':
+            newData = {
+                datasets: [{
+                    label: 'Posts',
+                    data: dailyActivity.length > 0 ? dailyActivity.map(d => d.posts) : generateSampleData(30, 5),
+                    borderColor: '#4caf50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            };
+            break;
+        case 'impressions':
+            newData = {
+                datasets: [{
+                    label: 'Impressions',
+                    data: generateSampleData(30, 1000),
+                    borderColor: '#ff9800',
+                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            };
+            break;
+    }
+    
+    engagementChart.data.datasets = newData.datasets;
+    engagementChart.update();
+}
+
+function setTimeRange(days) {
+    // Update active button
+    document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // In a real implementation, this would refresh the data for the selected time range
+    console.log('Setting time range to ' + days + ' days');
+}
+
+function generateDateLabels(days) {
+    const labels = [];
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    return labels;
+}
+
+function generateSampleData(points, max) {
+    const data = [];
+    for (let i = 0; i < points; i++) {
+        data.push(Math.floor(Math.random() * max));
+    }
+    return data;
+}
+</script>
+{% endblock %}

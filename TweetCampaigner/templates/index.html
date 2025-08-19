@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Twitter Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    AI-Powered Twitter Campaign Management
+                </h1>
+                <p class="lead mb-4">
+                    Automate your social media presence with intelligent content generation, 
+                    strategic scheduling, and comprehensive analytics.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="feature-icon bg-light text-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 200px; height: 200px;">
+                    <i class="fab fa-twitter" style="font-size: 4rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <h2 class="display-5 fw-bold mb-3">Powerful Features</h2>
+            <p class="lead text-muted">Everything you need to run successful Twitter campaigns</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h5 class="card-title">AI Content Generation</h5>
+                        <p class="card-text text-muted">
+                            Generate engaging tweets automatically using advanced AI that understands your brand and audience.
+                        </p>
+                        <span class="btn btn-primary btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h5 class="card-title">Smart Scheduling</h5>
+                        <p class="card-text text-muted">
+                            Schedule tweets at optimal times with our intelligent background processing system.
+                        </p>
+                        <span class="btn btn-success btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="card-title">Advanced Analytics</h5>
+                        <p class="card-text text-muted">
+                            Track performance with detailed analytics and insights to optimize your campaigns.
+                        </p>
+                        <span class="btn btn-info btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <h5 class="card-title">Trending Analysis</h5>
+                        <p class="card-text text-muted">
+                            Stay on top of trending hashtags and topics to maximize your reach and engagement.
+                        </p>
+                        <span class="btn btn-warning btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h5 class="card-title">Ethical Compliance</h5>
+                        <p class="card-text text-muted">
+                            Built-in spam detection and compliance features to protect your account and reputation.
+                        </p>
+                        <span class="btn btn-danger btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-md-4">
+            <a href="{{ url_for('register') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h5 class="card-title">Campaign Management</h5>
+                        <p class="card-text text-muted">
+                            Organize and manage multiple campaigns with customizable templates and strategies.
+                        </p>
+                        <span class="btn btn-secondary btn-sm mt-2">
+                            <i class="fas fa-arrow-right me-1"></i>Try Now
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h3 class="display-6 fw-bold mb-3">Ready to Get Started?</h3>
+                <p class="lead mb-4">
+                    Join thousands of marketers who are already using AI to supercharge their Twitter presence.
+                </p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Free to start</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>No credit card required</li>
+                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Set up in minutes</li>
+                </ul>
+            </div>
+            <div class="col-lg-6 text-center">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

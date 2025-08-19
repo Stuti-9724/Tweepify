@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Twitter Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h1>
+            <p class="lead text-muted">Welcome back, {{ current_user.username }}!</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-uppercase">Total Campaigns</h6>
+                            <h2 class="fw-bold">{{ total_campaigns }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-bullhorn fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-uppercase">Active Campaigns</h6>
+                            <h2 class="fw-bold">{{ active_campaigns }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-play-circle fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-uppercase">Posted Tweets</h6>
+                            <h2 class="fw-bold">{{ posted_tweets }}</h2>
+                        </div>
+                        <div>
+                            <i class="fab fa-twitter fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title text-uppercase">Total Tweets</h6>
+                            <h2 class="fw-bold">{{ total_tweets }}</h2>
+                        </div>
+                        <div>
+                            <i class="fas fa-chart-line fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('create_campaign') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-plus me-2"></i>New Campaign
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                <i class="fas fa-clock me-2"></i>Schedule Tweet
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('analytics') }}" class="btn btn-info w-100">
+                                <i class="fas fa-chart-bar me-2"></i>View Analytics
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100" onclick="loadTrendingHashtags()">
+                                <i class="fas fa-hashtag me-2"></i>Trending Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <!-- Recent Campaigns -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bullhorn me-2"></i>Recent Campaigns
+                    </h5>
+                    <a href="{{ url_for('campaigns') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_campaigns %}
+                        {% for campaign in recent_campaigns %}
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <h6 class="mb-1">{{ campaign.name }}</h6>
+                                <small class="text-muted">
+                                    Created {{ campaign.created_at.strftime('%b %d, %Y') }}
+                                </small>
+                            </div>
+                            <div>
+                                {% if campaign.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Paused</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No campaigns yet. Create your first campaign to get started!</p>
+                            <a href="{{ url_for('create_campaign') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Campaign
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Tweets -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fab fa-twitter me-2"></i>Recent Tweets
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_tweets %}
+                        <div class="list-group list-group-flush">
+                            {% for tweet in recent_tweets[:5] %}
+                            <div class="list-group-item px-0">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <p class="mb-1">{{ tweet.content[:80] }}{% if tweet.content|length > 80 %}...{% endif %}</p>
+                                        <small class="text-muted">
+                                            {% if tweet.status == 'posted' %}
+                                                Posted {{ tweet.posted_at.strftime('%b %d, %H:%M') if tweet.posted_at }}
+                                            {% elif tweet.status == 'scheduled' %}
+                                                Scheduled for {{ tweet.scheduled_time.strftime('%b %d, %H:%M') }}
+                                            {% else %}
+                                                {{ tweet.status.title() }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div>
+                                        {% if tweet.status == 'posted' %}
+                                            <span class="badge bg-success">Posted</span>
+                                        {% elif tweet.status == 'scheduled' %}
+                                            <span class="badge bg-primary">Scheduled</span>
+                                        {% elif tweet.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="fab fa-twitter fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No tweets scheduled yet. Start by scheduling your first tweet!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trending Hashtags -->
+    {% if trending_hashtags %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-hashtag me-2"></i>Trending Hashtags
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for hashtag in trending_hashtags %}
+                        <div class="col-md-2 col-sm-4 col-6 mb-2">
+                            <span class="badge bg-primary fs-6 w-100">{{ hashtag.hashtag }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Schedule Tweet Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-clock me-2"></i>Schedule Tweet
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('schedule_tweet') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Tweet Content</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" maxlength="280" required placeholder="What's happening?"></textarea>
+                        <div class="form-text">
+                            <span id="charCount">0</span>/280 characters
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scheduled_time" class="form-label">Schedule Time</label>
+                        <input type="datetime-local" class="form-control" id="scheduled_time" name="scheduled_time" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="campaign_id" class="form-label">Campaign (Optional)</label>
+                        <select class="form-select" id="campaign_id" name="campaign_id">
+                            <option value="">No Campaign</option>
+                            {% for campaign in recent_campaigns %}
+                            <option value="{{ campaign.id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-clock me-2"></i>Schedule Tweet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Character counter for tweet content
+document.getElementById('content').addEventListener('input', function() {
+    const charCount = this.value.length;
+    document.getElementById('charCount').textContent = charCount;
+    
+    if (charCount > 280) {
+        this.classList.add('is-invalid');
+    } else {
+        this.classList.remove('is-invalid');
+    }
+});
+
+// Set minimum datetime to current time
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('scheduled_time').min = now.toISOString().slice(0, 16);
+});
+
+// Load trending hashtags
+function loadTrendingHashtags() {
+    fetch('/api/trending_hashtags')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Trending hashtags:', data.hashtags);
+                // You could display these in a modal or update the UI
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

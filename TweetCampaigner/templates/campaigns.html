@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Campaigns - Twitter Campaign Manager{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-bullhorn me-2"></i>Campaigns
+            </h1>
+            <p class="lead text-muted">Manage your Twitter marketing campaigns</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('create_campaign') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus me-2"></i>New Campaign
+            </a>
+        </div>
+    </div>
+
+    <!-- Campaigns List -->
+    {% if campaigns.items %}
+        <div class="row">
+            {% for campaign in campaigns.items %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">{{ campaign.name }}</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="generateContent({{ campaign.id }})">
+                                    <i class="fas fa-robot me-2"></i>Generate Content
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="viewAnalytics({{ campaign.id }})">
+                                    <i class="fas fa-chart-line me-2"></i>View Analytics
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-warning" href="#" onclick="pauseCampaign({{ campaign.id }})">
+                                    <i class="fas fa-pause me-2"></i>Pause Campaign
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ campaign.description or 'No description provided.' }}</p>
+                        
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <small class="text-muted d-block">Frequency</small>
+                                <strong>{{ campaign.tweet_frequency }}/day</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Status</small>
+                                {% if campaign.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Paused</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Created</small>
+                                <strong>{{ campaign.created_at.strftime('%m/%d/%y') }}</strong>
+                            </div>
+                        </div>
+                        
+                        {% if campaign.keywords %}
+                            <div class="mb-2">
+                                <small class="text-muted">Keywords:</small>
+                                <p class="small">{{ campaign.keywords }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if campaign.hashtags %}
+                            <div class="mb-2">
+                                <small class="text-muted">Hashtags:</small>
+                                <p class="small">{{ campaign.hashtags }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if campaign.target_audience %}
+                            <div class="mb-2">
+                                <small class="text-muted">Target Audience:</small>
+                                <p class="small">{{ campaign.target_audience }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary btn-sm flex-fill" onclick="generateContent({{ campaign.id }})">
+                                <i class="fas fa-robot me-1"></i>Generate
+                            </button>
+                            <button class="btn btn-outline-success btn-sm flex-fill" onclick="scheduleTweets({{ campaign.id }})">
+                                <i class="fas fa-clock me-1"></i>Schedule
+                            </button>
+                            <button class="btn btn-outline-info btn-sm flex-fill" onclick="viewAnalytics({{ campaign.id }})">
+                                <i class="fas fa-chart-bar me-1"></i>Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if campaigns.pages > 1 %}
+        <nav aria-label="Campaign pagination">
+            <ul class="pagination justify-content-center">
+                {% if campaigns.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('campaigns', page=campaigns.prev_num) }}">Previous</a>
+                    </li>
+                {% endif %}
+                
+                {% for page_num in campaigns.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != campaigns.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('campaigns', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if campaigns.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('campaigns', page=campaigns.next_num) }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-bullhorn fa-5x text-muted mb-4"></i>
+                        <h3>No Campaigns Yet</h3>
+                        <p class="lead text-muted mb-4">
+                            Create your first campaign to start automating your Twitter presence with AI-powered content.
+                        </p>
+                        <a href="{{ url_for('create_campaign') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Create Your First Campaign
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Content Generation Modal -->
+<div class="modal fade" id="contentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-robot me-2"></i>AI Generated Content
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contentLoading" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Generating content...</span>
+                    </div>
+                    <p class="mt-2">AI is generating content for your campaign...</p>
+                </div>
+                <div id="contentResult" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Generated Tweet Content:</label>
+                        <textarea class="form-control" id="generatedContent" rows="4" readonly></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" onclick="scheduleGeneratedContent()">
+                            <i class="fas fa-clock me-2"></i>Schedule This Tweet
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="regenerateContent()">
+                            <i class="fas fa-sync me-2"></i>Generate Another
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Tweets Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-clock me-2"></i>Schedule Campaign Tweets
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tweetsPerDay" class="form-label">Tweets per Day</label>
+                        <input type="number" class="form-control" id="tweetsPerDay" min="1" max="10" value="3" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitSchedule()">
+                    <i class="fas fa-clock me-2"></i>Schedule Tweets
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentCampaignId = null;
+
+function generateContent(campaignId) {
+    currentCampaignId = campaignId;
+    
+    // Show modal and loading state
+    const modal = new bootstrap.Modal(document.getElementById('contentModal'));
+    modal.show();
+    
+    document.getElementById('contentLoading').style.display = 'block';
+    document.getElementById('contentResult').style.display = 'none';
+    
+    // Make request to generate content
+    fetch(`/campaigns/${campaignId}/generate_content`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('contentLoading').style.display = 'none';
+        
+        if (data.success) {
+            document.getElementById('generatedContent').value = data.content;
+            document.getElementById('contentResult').style.display = 'block';
+        } else {
+            alert('Error generating content: ' + data.error);
+        }
+    })
+    .catch(error => {
+        document.getElementById('contentLoading').style.display = 'none';
+        alert('Error generating content: ' + error);
+    });
+}
+
+function regenerateContent() {
+    if (currentCampaignId) {
+        generateContent(currentCampaignId);
+    }
+}
+
+function scheduleGeneratedContent() {
+    const content = document.getElementById('generatedContent').value;
+    // Here you would implement the logic to schedule this specific content
+    alert('Feature coming soon: Direct scheduling of generated content');
+}
+
+function scheduleTweets(campaignId) {
+    currentCampaignId = campaignId;
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').min = today;
+    document.getElementById('endDate').min = today;
+    document.getElementById('startDate').value = today;
+    
+    const modal = new bootstrap.Modal(document.getElementById('scheduleModal'));
+    modal.show();
+}
+
+function submitSchedule() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const tweetsPerDay = document.getElementById('tweetsPerDay').value;
+    
+    if (!startDate || !endDate || !tweetsPerDay) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (new Date(endDate) < new Date(startDate)) {
+        alert('End date must be after start date');
+        return;
+    }
+    
+    // Here you would implement the actual scheduling logic
+    alert(`Scheduling ${tweetsPerDay} tweets per day from ${startDate} to ${endDate} for campaign ${currentCampaignId}`);
+    
+    // Close modal
+    bootstrap.Modal.getInstance(document.getElementById('scheduleModal')).hide();
+}
+
+function viewAnalytics(campaignId) {
+    window.location.href = `/analytics?campaign=${campaignId}`;
+}
+
+function pauseCampaign(campaignId) {
+    if (confirm('Are you sure you want to pause this campaign?')) {
+        // Here you would implement the pause logic
+        alert('Campaign paused (feature to be implemented)');
+    }
+}
+
+// Update end date minimum when start date changes
+document.getElementById('startDate').addEventListener('change', function() {
+    document.getElementById('endDate').min = this.value;
+});
+</script>
+{% endblock %}
